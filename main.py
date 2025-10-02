@@ -2,6 +2,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 import telegram
+import asyncio
 
 # Các link ảnh
 image_urls = [
@@ -31,7 +32,12 @@ for img in images:
 combined.save("combined.jpg")
 
 # Gửi vào Telegram
-bot = telegram.Bot(token="BOT_TOKEN")
-chat_id = "CHAT_ID"
-with open("combined.jpg", "rb") as photo:
-    bot.send_photo(chat_id=chat_id, photo=photo)
+async def send_image():
+    bot = telegram.Bot(token="BOT_TOKEN")
+    chat_id = "CHAT_ID"
+    with open("combined.jpg", "rb") as photo:
+        await bot.send_photo(chat_id=chat_id, photo=photo)
+
+# Gọi hàm async
+asyncio.run(send_image())
+
