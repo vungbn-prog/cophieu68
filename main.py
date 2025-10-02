@@ -31,13 +31,5 @@ for img in images:
 # Lưu ảnh
 combined.save("combined.jpg")
 
-# Gửi vào Telegram
-async def send_image():
-    bot = telegram.Bot(token="BOT_TOKEN")
-    chat_id = "CHAT_ID"
-    with open("combined.jpg", "rb") as photo:
-        await bot.send_photo(chat_id=chat_id, photo=photo)
 
-# Gọi hàm async
-asyncio.run(send_image())
 
