@@ -12,6 +12,9 @@ from datetime import datetime, timedelta
 import telegram
 from telegram.ext import ApplicationBuilder, CommandHandler
 import asyncio
+import os
+import json
+from google.oauth2.service_account import Credentials
 
 print("Start")
 # === CONFIG ===
@@ -65,10 +68,20 @@ stochlink = (
 endlink = f"&time={minqty}"
 
 # --- Kết nối Google Sheets ---
-gc = gspread.service_account(filename="credentials.json")
+# === Tạo credentials từ biến môi trường ===
+json_creds = json.loads(os.environ["GOOGLE_CREDENTIALS"])
+scopes = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+credentials = Credentials.from_service_account_info(json_creds, scopes=scopes)
+# === Kết nối gspread ===
+gc = gspread.authorize(credentials)
+# === Truy cập các worksheet ===
 FILTER = gc.open("Todolist").worksheet("Hvuot20")
 LNST = gc.open("Todolist").worksheet("LNST")
 LISTCP = gc.open("Todolist").worksheet("DM")
+
 
 def is_connected(host="8.8.8.8", port=53, timeout=3):
     try:
