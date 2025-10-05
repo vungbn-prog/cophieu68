@@ -234,6 +234,7 @@ import asyncio
 
 # --- Hàm main ---
 async def main():
+    PORT = int(os.environ.get("PORT", 8443))
     application = (
         ApplicationBuilder()
         .token(token)
@@ -243,9 +244,10 @@ async def main():
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("go", handle_command))
-    PORT = int(os.environ.get("PORT", 8443))
+    
     await application.initialize()
     await application.start()
+    print(f"Bot đang chạy trên cổng {PORT}")
     await application.run_webhook(
         listen="0.0.0.0",
         port=PORT,
