@@ -239,20 +239,13 @@ def start_health_server():
     server.serve_forever()
 
 # Chạy server trong luồng riêng để không chặn bot
-#threading.Thread(target=start_health_server, daemon=True).start()
+threading.Thread(target=start_health_server, daemon=True).start()
+
 
 
 
 if __name__ == "__main__":
-    asyncio.run(bot.delete_webhook())  # Xóa webhook cũ nếu có
-
-    application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 10000)),
-        webhook_url="https://cophieu68.onrender.com/" + token
-    )
-#if __name__ == "__main__":
-#    application.run_polling(drop_pending_updates=True)
+    application.run_polling(drop_pending_updates=True)
 
 
 
