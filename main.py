@@ -245,7 +245,7 @@ threading.Thread(target=start_health_server, daemon=True).start()
 
 
 if __name__ == "__main__":
-    application.run_polling(drop_pending_updates=True)
+    application.run_polling()
 
 
 
