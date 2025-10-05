@@ -212,7 +212,7 @@ import asyncio
 
 # --- Hàm main ---
 async def main():
-    PORT = int(os.environ.get("PORT", 8443))
+    PORT = int(os.environ.get("PORT", 10000))
     application = (
         ApplicationBuilder()
         .token(token)
