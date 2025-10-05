@@ -132,28 +132,31 @@ def download_image(url):
         return None
 
 def generate_chart_image(stick):
-    img1 = download_image(chartlinklong + stick + endlink)
-    img2 = download_image(chartlink + stick + endlink)
-    img3 = download_image(macdlink + stick + endlink)
-    img4 = download_image(stochlink + stick + endlink)
-    # === Ghép ảnh theo chiều dọc ===
-    width = max(img1.width, img2.width, img3.width, img4.width)
-    height = img1.height + img2.height + img3.height + img4.height
-
-    combined_img = Image.new("RGB", (width, height), (255, 255, 255))
-    y_offset = 0
-    for img in [img1, img2, img3, img4]:
-        combined_img.paste(img, (0, y_offset))
-        y_offset += img.height
-    combined_img.save("combined_chart.png")
-
-    draw = ImageDraw.Draw(combined_img)
-    font = ImageFont.load_default()
-    draw.text((60, 60), get_fa_info(stick), fill='black', font=font)
-    img_path = f"{picturepath}\\Dchart.png"
-    combined_img.save(img_path)
-    return img_path
-
+    try:
+        img1 = download_image(chartlinklong + stick + endlink)
+        img2 = download_image(chartlink + stick + endlink)
+        img3 = download_image(macdlink + stick + endlink)
+        img4 = download_image(stochlink + stick + endlink)
+        # === Ghép ảnh theo chiều dọc ===
+        width = max(img1.width, img2.width, img3.width, img4.width)
+        height = img1.height + img2.height + img3.height + img4.height
+    
+        combined_img = Image.new("RGB", (width, height), (255, 255, 255))
+        y_offset = 0
+        for img in [img1, img2, img3, img4]:
+            combined_img.paste(img, (0, y_offset))
+            y_offset += img.height
+        combined_img.save("combined_chart.png")
+    
+        draw = ImageDraw.Draw(combined_img)
+        font = ImageFont.load_default()
+        draw.text((60, 60), get_fa_info(stick), fill='black', font=font)
+        img_path = f"{picturepath}\\Dchart.png"
+        combined_img.save(img_path)
+        return img_path
+    except:
+        img_path = f"{picturepath}\\Dchart.png"
+        return img_path
 
 
 async def send_chart(stick, chat_id):
