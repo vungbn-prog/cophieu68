@@ -205,8 +205,7 @@ async def on_startup(application):
     await application.bot.send_message("-869106170", text="✅ Bot đã sẵn sàng!")
     asyncio.create_task(autorun(application))
 
-application.add_handler(CommandHandler("start", start))
-application.add_handler(CommandHandler("go", handle_command))
+
 
 
 import asyncio
@@ -220,7 +219,8 @@ async def main():
         .post_init(on_startup)
         .build()
     )
-
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("go", handle_command))
     await application.initialize()
     await application.start()
     print(f"Bot đang chạy trên cổng {PORT}")
