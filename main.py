@@ -231,14 +231,19 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
 import asyncio
-async def main():
-    await application.bot.delete_webhook(drop_pending_updates=True)
 
+async def main():
+    application = Application.builder().token(token).build()
+
+    await application.initialize()
+    await application.start()
     await application.run_webhook(
         listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 10000)),
-        webhook_url="https://cophieu68.onrender.com/" + token
+        port=8443,
+        webhook_url="https://cophieu68.onrender.com//webhook"
     )
+    await application.shutdown()
+    await application.stop()
 
 if __name__ == "__main__":
     asyncio.run(main())
