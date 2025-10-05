@@ -20,7 +20,6 @@ print("Start")
 # === CONFIG ===
 droomid = "-869106170"
 token = "7985230502:AAEPzSZtJqMeyfNjWXTI_NvIKiQR6dRhMA4"
-bot = telegram.Bot(token=token)
 # === Xử lý ngày tháng ===
 today = datetime.now()
 past_date = today - timedelta(days=1500)
