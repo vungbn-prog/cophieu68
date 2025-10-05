@@ -121,11 +121,15 @@ def get_fa_info(stick):
     return ""
 
 # === Tải ảnh từ URL ===
-def download_image(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    return Image.open(BytesIO(response.content))
 
+def download_image(url):
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        return Image.open(BytesIO(response.content))
+    except (requests.RequestException, UnidentifiedImageError) as e:
+        print(f"❌ Không thể tải ảnh từ URL: {url} — {e}")
+        return None
 
 def generate_chart_image(stick):
     img1 = download_image(chartlinklong + stick + endlink)
