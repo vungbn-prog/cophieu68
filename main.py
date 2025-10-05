@@ -19,7 +19,7 @@ from google.oauth2.service_account import Credentials
 print("Start")
 # === CONFIG ===
 droomid = "1687327923"
-token = "2021826759:AAHkeZK5ymkhyM-MfazjdTdsvkd0KPvo_ig"
+token = "7985230502:AAEPzSZtJqMeyfNjWXTI_NvIKiQR6dRhMA4"
 bot = telegram.Bot(token=token)
 # === Xử lý ngày tháng ===
 today = datetime.now()
