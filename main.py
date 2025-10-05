@@ -188,7 +188,7 @@ async def start(update, context):
 
 async def handle_command(update, context):
     if update.message.text.strip() == "/go":
-        now = datetime.datetime.now()
+        now = datetime.now()
         hientai = f" lúc {now.hour}:{now.minute}"
         await bot.send_message("-869106170", "AllCP Start" + hientai)
         print("AllCP Start" + hientai)
