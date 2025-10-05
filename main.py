@@ -170,12 +170,12 @@ async def autorun():
         now = datetime.now()
         m = now.hour * 60 + now.minute
         hientai = f" lúc {now.hour}:{now.minute}"
-        if now.weekday() < 10:
-            if 0 <= m < 885:
+        if now.weekday() < 5:
+            if 540 <= m < 885:
                 for s in read_gsheet_list(FILTER):
                     await send_chart(s.replace('/', '').strip(), "-869106170")
                 sent = False
-            elif m == 1080 and not sent:
+            elif m == 900 and not sent:
                 for s in read_gsheet_list(LISTCP):
                     await send_chart(s.replace('/', '').strip(), "-869106170")
                 sent = True
