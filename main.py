@@ -238,17 +238,19 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
 
 # Chạy server trong luồng riêng để không chặn bot
 #threading.Thread(target=start_health_server, daemon=True).start()
-
 import asyncio
-asyncio.run(application.bot.delete_webhook(drop_pending_updates=True))
+async def main():
+    await application.bot.delete_webhook(drop_pending_updates=True)
 
-if __name__ == "__main__":
-    import os
-    application.run_webhook(
+    await application.run_webhook(
         listen="0.0.0.0",
         port=int(os.environ.get("PORT", 10000)),
         webhook_url="https://cophieu68.onrender.com/" + token
     )
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
 #if __name__ == "__main__":
     #application.run_polling()
 
