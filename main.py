@@ -1,35 +1,201 @@
+
+
+import gspread
+import gspread_dataframe as gd
 import requests
 from PIL import Image
 from io import BytesIO
+import socket
+import time
+from PIL import Image, ImageDraw, ImageFont
+from datetime import datetime, timedelta
 import telegram
+from telegram.ext import ApplicationBuilder, CommandHandler
 import asyncio
 
-# Các link ảnh
-image_urls = [
-    "https://www.cophieu68.vn/chartold/chartsymbol_chart.php?screenwidth=1024&csc=1759338000&s=2024-10-07&e=2025-10-02&page=0&m=candle&dateby=1&extend_height=1&extend_weight=1&data_type1=1&data_type2=&sma=1&sma_day=10&sma2_day=&sma3_day=&sma4_day=&ema=1&ema_day=30&ema2_day=&ema3_day=&ema4_day=&ichimoku=1&tenkan_sen=9&kijun_sen=26&senkou_span=26&chartsize=1&id=^vnindex&time=1759411924",
-    "https://www.cophieu68.vn/chartold/chartsymbol_chart.php?screenwidth=1024&csc=1759338000&s=2024-10-07&e=2025-10-02&page=0&m=candle&dateby=1&extend_height=1&extend_weight=1&data_type1=1&data_type2=&sma=1&sma_day=10&sma2_day=&sma3_day=&sma4_day=&ema=1&ema_day=30&ema2_day=&ema3_day=&ema4_day=&ichimoku=1&tenkan_sen=9&kijun_sen=26&senkou_span=26&chartsize=1&id=^vnindex&time=1759411924",
-    "https://www.cophieu68.vn/chartold/chartsymbol_chart.php?screenwidth=1024&csc=1759338000&s=2024-10-07&e=2025-10-02&page=0&m=candle&dateby=1&extend_height=1&extend_weight=1&data_type1=1&data_type2=&sma=1&sma_day=10&sma2_day=&sma3_day=&sma4_day=&ema=1&ema_day=30&ema2_day=&ema3_day=&ema4_day=&ichimoku=1&tenkan_sen=9&kijun_sen=26&senkou_span=26&chartsize=1&id=^vnindex&time=1759411924"
-]
+print("Start")
+# === CONFIG ===
+droomid = "1687327923"
+token = "2021826759:AAHkeZK5ymkhyM-MfazjdTdsvkd0KPvo_ig"
+bot = telegram.Bot(token=token)
+# === Xử lý ngày tháng ===
+today = datetime.now()
+past_date = today - timedelta(days=1500)
+fromdate = past_date.strftime("%Y-%m-%d")  # hoặc định dạng bạn cần
 
-# Tải ảnh
-images = []
-for url in image_urls:
+past_date2 = today - timedelta(days=100)
+fromdate2 = past_date2.strftime("%Y-%m-%d")
+todate = today.strftime("%Y-%m-%d")
+
+minqty = today.hour * 60 + today.minute
+weekday = today.weekday()  # Thứ hai = 0, Chủ nhật = 6
+picturepath = r"D:\python3"
+# Giả sử bạn đã có các biến fromdate, fromdate2, todate, minqty như đã chuyển trước đó
+print(fromdate)
+print(fromdate2)
+# === Tạo các đường dẫn biểu đồ ===
+chartlinklong = (
+    "https://www.cophieu68.vn/chartold/chartsymbol_chart.php?screenwidth=720"
+    f"&s={fromdate}&e={todate}&page=0&m=candle&chartsize=100&dateby=1"
+    "&extend_height=1&extend_weight=1&data_type1=1&bollinger=1&sma=1"
+    "&sma_day=20&sma2_day=50&sma3_day=200&showvolume=1&ichimoku=1"
+    "&tenkan_sen=9&kijun_sen=26&senkou_span=26&chartsize=1&id="
+)
+
+chartlink = (
+    "https://www.cophieu68.vn/chartold/chartsymbol_chart.php?screenwidth=720"
+    f"&s={fromdate2}&e={todate}&page=0&m=candle&chartsize=100&dateby=1"
+    "&extend_height=1&extend_weight=1&data_type1=1&bollinger=1&sma=1"
+    "&sma_day=20&sma2_day=50&sma3_day=200&showvolume=1&ichimoku=1"
+    "&tenkan_sen=9&kijun_sen=26&senkou_span=26&chartsize=1&id="
+)
+
+macdlink = (
+    "https://www.cophieu68.vn/chartold/chartsymbol_chart.php?screenwidth=720"
+    f"&s={fromdate2}&e={todate}&page=0&m=macd&chartsize=1"
+    "&day_1=9&day_2=26&day_3=12&id="
+)
+
+stochlink = (
+    "https://www.cophieu68.vn/chartold/chartsymbol_chart.php?screenwidth=720"
+    f"&s={fromdate2}&e={todate}&page=0&m=stochastic&chartsize=1"
+    "&stochastic_day=14&stochastic_ma=5&id="
+)
+
+endlink = f"&time={minqty}"
+
+# --- Kết nối Google Sheets ---
+gc = gspread.service_account(filename="credentials.json")
+FILTER = gc.open("Todolist").worksheet("Hvuot20")
+LNST = gc.open("Todolist").worksheet("LNST")
+LISTCP = gc.open("Todolist").worksheet("DM")
+
+def is_connected(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error:
+        return False
+
+def reconnect_gsheet():
+    global gc, FILTER, LNST, LISTCP
+    if is_connected():
+        try:
+            gc = gspread.service_account(filename="credentials.json")
+            FILTER = gc.open("Todolist").worksheet("Hvuot20")
+            LNST = gc.open("Todolist").worksheet("LNST")
+            LISTCP = gc.open("Todolist").worksheet("DM")
+            print("Đã kết nối lại với Google Sheets.")
+        except Exception as e:
+            print("Lỗi khi kết nối lại:", e)
+    else:
+        print("Mất kết nối mạng, đang khắc phục...")
+    time.sleep(5)
+
+def read_gsheet_list(sheet):
+    while True:
+        try:
+            df = gd.get_as_dataframe(sheet, evaluate_formulas=True, usecols=[0], names=['code']).dropna()
+            return df['code'].astype(str).str.strip().tolist()[1:]
+        except:
+            reconnect_gsheet()
+
+def get_fa_info(stick):
+    for line in read_gsheet_list(LNST):
+        if stick in line:
+            return line.strip()
+    return ""
+
+# === Tải ảnh từ URL ===
+def download_image(url):
     response = requests.get(url)
-    img = Image.open(BytesIO(response.content))
-    images.append(img)
+    response.raise_for_status()
+    return Image.open(BytesIO(response.content))
 
-# Ghép ảnh theo chiều dọc
-width = max(img.width for img in images)
-height = sum(img.height for img in images)
-combined = Image.new('RGB', (width, height))
 
-y_offset = 0
-for img in images:
-    combined.paste(img, (0, y_offset))
-    y_offset += img.height
+def generate_chart_image(stick):
+    img1 = download_image(chartlinklong + stick + endlink)
+    img2 = download_image(chartlink + stick + endlink)
+    img3 = download_image(macdlink + stick + endlink)
+    img4 = download_image(stochlink + stick + endlink)
+    # === Ghép ảnh theo chiều dọc ===
+    width = max(img1.width, img2.width, img3.width, img4.width)
+    height = img1.height + img2.height + img3.height + img4.height
 
-# Lưu ảnh
-combined.save("combined.jpg")
+    combined_img = Image.new("RGB", (width, height), (255, 255, 255))
+    y_offset = 0
+    for img in [img1, img2, img3, img4]:
+        combined_img.paste(img, (0, y_offset))
+        y_offset += img.height
+    combined_img.save("combined_chart.png")
+
+    draw = ImageDraw.Draw(combined_img)
+    font = ImageFont.truetype("arial.ttf", 16)
+    draw.text((60, 60), get_fa_info(stick), fill='black', font=font)
+    img_path = f"{picturepath}\\Dchart.png"
+    combined_img.save(img_path)
+    return img_path
+
+
+
+async def send_chart(stick, chat_id):
+    img_path = generate_chart_image(stick)
+    if img_path:
+        link = f"https://24hmoney.vn/phan-tich-ky-thuat?symbol={stick}&object-type=symbol"
+        try:
+            await bot.send_photo(chat_id, open(img_path, 'rb'), caption=f'<a href="{link}">Xem biểu đồ</a> /{stick}', parse_mode='HTML')
+            print(stick)
+        except Exception as e:
+            print(f"Lỗi gửi ảnh: {e}")
+
+# --- Tự động gửi biểu đồ ---
+async def autorun():
+    global hientai
+    sent = False
+    while True:
+        now = datetime.now()
+        m = now.hour * 60 + now.minute
+        hientai = f" lúc {now.hour}:{now.minute}"
+        if now.weekday() < 10:
+            if 0 <= m < 885:
+                for s in read_gsheet_list(FILTER):
+                    await send_chart(s.replace('/', '').strip(), "1687327923")
+                sent = False
+            elif m == 1080 and not sent:
+                for s in read_gsheet_list(LISTCP):
+                    await send_chart(s.replace('/', '').strip(), "1687327923")
+                sent = True
+        await asyncio.sleep(5)
+
+
+# --- Handler cho Telegram ---
+async def start(update, context):
+    await update.message.reply_text("Bot đã khởi động!")
+
+async def handle_command(update, context):
+    if update.message.text.strip() == "/go":
+        now = datetime.datetime.now()
+        hientai = f" lúc {now.hour}:{now.minute}"
+        await bot.send_message("1687327923", "AllCP Start" + hientai)
+        print("AllCP Start" + hientai)
+        for stick in read_gsheet_list(LISTCP):
+            await send_chart(stick.replace('/', '').strip(), "1687327923")
+
+# --- Hàm khởi động bot và autorun ---
+async def on_startup(application):
+    await bot.send_message("1687327923", text="✅ Bot đã sẵn sàng!")
+    asyncio.create_task(autorun())
+
+application = ApplicationBuilder() \
+    .token(token) \
+    .post_init(on_startup) \
+    .build()
+
+application.add_handler(CommandHandler("start", start))
+application.add_handler(CommandHandler("go", handle_command))
+application.run_polling()
+
 
 
 
