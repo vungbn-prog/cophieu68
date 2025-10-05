@@ -205,30 +205,9 @@ async def on_startup(application):
     await application.bot.send_message("-869106170", text="✅ Bot đã sẵn sàng!")
     asyncio.create_task(autorun(application))
 
-application = ApplicationBuilder() \
-    .token(token) \
-    .post_init(on_startup) \
-    .build()
-
 application.add_handler(CommandHandler("start", start))
 application.add_handler(CommandHandler("go", handle_command))
 
-
-
-
-
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
-
-class HealthCheckHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is alive and running.")
-
-    def do_HEAD(self):
-        self.send_response(200)
-        self.end_headers()
 
 import asyncio
 
@@ -242,9 +221,6 @@ async def main():
         .build()
     )
 
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("go", handle_command))
-    
     await application.initialize()
     await application.start()
     print(f"Bot đang chạy trên cổng {PORT}")
