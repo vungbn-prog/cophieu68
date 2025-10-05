@@ -231,6 +231,37 @@ async def main():
     )
 
 
+
+
+
+import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is alive and running.")
+
+    def do_HEAD(self):
+        self.send_response(200)
+        self.end_headers()
+
+def start_health_server():
+    port = int(os.environ.get("PORT", 8080))  # Render sẽ cấp PORT qua biến môi trường
+    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+    print(f"Health check server đang chạy trên cổng {port}")
+    server.serve_forever()
+
+# Chạy server trong luồng riêng
+threading.Thread(target=start_health_server, daemon=True).start()
+
+
+
+
+
+
 if __name__ == "__main__":
     asyncio.run(main())
 
