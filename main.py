@@ -230,11 +230,11 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
-def start_health_server():
-    port = int(os.environ.get("PORT", 8000))
-    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
-    print(f"Health check server running on port {port}")
-    server.serve_forever()
+#def start_health_server():
+    #port = int(os.environ.get("PORT", 8000))
+    #server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+    #print(f"Health check server running on port {port}")
+    #server.serve_forever()
 
 # Chạy server trong luồng riêng để không chặn bot
 #threading.Thread(target=start_health_server, daemon=True).start()
