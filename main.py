@@ -31,7 +31,8 @@ todate = today.strftime("%Y-%m-%d")
 
 minqty = today.hour * 60 + today.minute
 weekday = today.weekday()  # Thứ hai = 0, Chủ nhật = 6
-picturepath = "./python3"
+picturepath = "/tmp"
+
 # Giả sử bạn đã có các biến fromdate, fromdate2, todate, minqty như đã chuyển trước đó
 
 # === Tạo các đường dẫn biểu đồ ===
@@ -149,11 +150,11 @@ def generate_chart_image(stick):
         draw = ImageDraw.Draw(combined_img)
         font = ImageFont.load_default()
         draw.text((60, 60), get_fa_info(stick), fill='black', font=font)
-        img_path = f"{picturepath}\\Dchart.png"
+        img_path = os.path.join(picturepath, "Dchart.png")
         combined_img.save(img_path)
         return img_path
     except:
-        img_path = f"{picturepath}\\Dchart.png"
+        img_path = os.path.join(picturepath, "Dchart.png")
         return img_path
 
 
