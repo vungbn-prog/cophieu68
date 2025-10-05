@@ -144,7 +144,7 @@ def generate_chart_image(stick):
     combined_img.save("combined_chart.png")
 
     draw = ImageDraw.Draw(combined_img)
-    font = ImageFont.truetype("arial.ttf", 16)
+    font = ImageFont.load_default()
     draw.text((60, 60), get_fa_info(stick), fill='black', font=font)
     img_path = f"{picturepath}\\Dchart.png"
     combined_img.save(img_path)
