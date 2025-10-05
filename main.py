@@ -215,6 +215,31 @@ application = ApplicationBuilder() \
 application.add_handler(CommandHandler("start", start))
 application.add_handler(CommandHandler("go", handle_command))
 
+
+
+
+
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is alive and running.")
+
+def start_health_server():
+    port = int(os.environ.get("PORT", 8000))
+    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+    print(f"Health check server running on port {port}")
+    server.serve_forever()
+
+# Chạy server trong luồng riêng để không chặn bot
+threading.Thread(target=start_health_server, daemon=True).start()
+
+
+
+
 if __name__ == "__main__":
     application.run_polling()
 
