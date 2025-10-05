@@ -232,18 +232,27 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
 
 import asyncio
 
+# --- Hàm main ---
 async def main():
-    application = application.builder().token(token).build()
+    application = (
+        ApplicationBuilder()
+        .token(token)
+        .post_init(on_startup)
+        .build()
+    )
+
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("go", handle_command))
 
     await application.initialize()
     await application.start()
     await application.run_webhook(
         listen="0.0.0.0",
         port=8443,
-        webhook_url="https://cophieu68.onrender.com//webhook"
+        webhook_url="https://cophieu68.onrender.com/webhook"
     )
-    await application.shutdown()
     await application.stop()
+    await application.shutdown()
 
 if __name__ == "__main__":
     asyncio.run(main())
