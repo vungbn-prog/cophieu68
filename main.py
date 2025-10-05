@@ -207,7 +207,9 @@ application = ApplicationBuilder() \
 
 application.add_handler(CommandHandler("start", start))
 application.add_handler(CommandHandler("go", handle_command))
-application.run_polling()
+
+if __name__ == "__main__":
+    application.run_polling()
 
 
 
