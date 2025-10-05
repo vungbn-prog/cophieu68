@@ -31,10 +31,9 @@ todate = today.strftime("%Y-%m-%d")
 
 minqty = today.hour * 60 + today.minute
 weekday = today.weekday()  # Thứ hai = 0, Chủ nhật = 6
-picturepath = r"D:\python3"
+picturepath = "./python3"
 # Giả sử bạn đã có các biến fromdate, fromdate2, todate, minqty như đã chuyển trước đó
-print(fromdate)
-print(fromdate2)
+
 # === Tạo các đường dẫn biểu đồ ===
 chartlinklong = (
     "https://www.cophieu68.vn/chartold/chartsymbol_chart.php?screenwidth=720"
@@ -243,16 +242,15 @@ async def main():
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("go", handle_command))
-
+    PORT = int(os.environ.get("PORT", 8443))
     await application.initialize()
     await application.start()
     await application.run_webhook(
         listen="0.0.0.0",
-        port=8443,
+        port=PORT,
         webhook_url="https://cophieu68.onrender.com/webhook"
     )
-    await application.stop()
-    await application.shutdown()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
