@@ -175,7 +175,7 @@ async def autorun():
                 for s in read_gsheet_list(FILTER):
                     await send_chart(s.replace('/', '').strip(), "-869106170")
                 sent = False
-            elif m == 900 and not sent:
+            elif m == 1020 and not sent:
                 for s in read_gsheet_list(LISTCP):
                     await send_chart(s.replace('/', '').strip(), "-869106170")
                 sent = True
