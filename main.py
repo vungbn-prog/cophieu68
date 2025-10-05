@@ -173,11 +173,11 @@ async def autorun():
         if now.weekday() < 10:
             if 0 <= m < 885:
                 for s in read_gsheet_list(FILTER):
-                    await send_chart(s.replace('/', '').strip(), CHAT_ID)
+                    await send_chart(s.replace('/', '').strip(), "1687327923")
                 sent = False
             elif m == 1080 and not sent:
                 for s in read_gsheet_list(LISTCP):
-                    await send_chart(s.replace('/', '').strip(), CHAT_ID)
+                    await send_chart(s.replace('/', '').strip(), "1687327923")
                 sent = True
         await asyncio.sleep(5)
 
@@ -190,14 +190,14 @@ async def handle_command(update, context):
     if update.message.text.strip() == "/go":
         now = datetime.datetime.now()
         hientai = f" lúc {now.hour}:{now.minute}"
-        await bot.send_message(CHAT_ID, "AllCP Start" + hientai)
+        await bot.send_message("1687327923", "AllCP Start" + hientai)
         print("AllCP Start" + hientai)
         for stick in read_gsheet_list(LISTCP):
-            await send_chart(stick.replace('/', '').strip(), CHAT_ID)
+            await send_chart(stick.replace('/', '').strip(), "1687327923")
 
 # --- Hàm khởi động bot và autorun ---
 async def on_startup(application):
-    await bot.send_message(CHAT_ID, text="✅ Bot đã sẵn sàng!")
+    await bot.send_message("1687327923", text="✅ Bot đã sẵn sàng!")
     asyncio.create_task(autorun())
 
 application = ApplicationBuilder() \
