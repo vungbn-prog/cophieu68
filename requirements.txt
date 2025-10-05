@@ -2,9 +2,5 @@ gspread
 gspread_dataframe
 requests
 Pillow
-io
-socket
-time
-datetime
-telegram
-asyncio
+python-telegram-bot
+
