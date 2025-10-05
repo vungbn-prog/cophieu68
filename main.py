@@ -158,7 +158,7 @@ def generate_chart_image(stick):
         return img_path
 
 
-async def send_chart(stick, chat_id):
+async def send_chart(stick, chat_id, bot):
     img_path = generate_chart_image(stick)
     if img_path:
         link = f"https://24hmoney.vn/phan-tich-ky-thuat?symbol={stick}&object-type=symbol"
@@ -169,24 +169,23 @@ async def send_chart(stick, chat_id):
             print(f"Lỗi gửi ảnh: {e}")
 
 # --- Tự động gửi biểu đồ ---
-async def autorun():
-    global hientai
+async def autorun(application):
     sent = False
     while True:
         now = datetime.now()
         m = now.hour * 60 + now.minute
         hientai = f" lúc {now.hour}:{now.minute}"
+        bot = application.bot
         if now.weekday() < 5:
             if 540 <= m < 885:
                 for s in read_gsheet_list(FILTER):
-                    await send_chart(s.replace('/', '').strip(), "-869106170")
+                    await send_chart(s.replace('/', '').strip(), "-869106170", bot)
                 sent = False
             elif m == 1020 and not sent:
                 for s in read_gsheet_list(LISTCP):
-                    await send_chart(s.replace('/', '').strip(), "-869106170")
+                    await send_chart(s.replace('/', '').strip(), "-869106170", bot)
                 sent = True
         await asyncio.sleep(5)
-
 
 # --- Handler cho Telegram ---
 async def start(update, context):
@@ -196,15 +195,15 @@ async def handle_command(update, context):
     if update.message.text.strip() == "/go":
         now = datetime.now()
         hientai = f" lúc {now.hour}:{now.minute}"
-        await bot.send_message("-869106170", "AllCP Start" + hientai)
+        await context.bot.send_message("-869106170", "AllCP Start" + hientai)
         print("AllCP Start" + hientai)
         for stick in read_gsheet_list(LISTCP):
-            await send_chart(stick.replace('/', '').strip(), "-869106170")
+            await send_chart(stick.replace('/', '').strip(), "-869106170", context.bot)
 
 # --- Hàm khởi động bot và autorun ---
 async def on_startup(application):
-    await bot.send_message("-869106170", text="✅ Bot đã sẵn sàng!")
-    asyncio.create_task(autorun())
+    await application.bot.send_message("-869106170", text="✅ Bot đã sẵn sàng!")
+    asyncio.create_task(autorun(application))
 
 application = ApplicationBuilder() \
     .token(token) \
