@@ -1,7 +1,7 @@
 gspread
 gspread_dataframe
 requests
-PIL
+Pillow
 io
 socket
 time
