@@ -233,7 +233,7 @@ class HealthCheckHandler(BaseHTTPRequestHandler):
 import asyncio
 
 async def main():
-    application = Application.builder().token(token).build()
+    application = application.builder().token(token).build()
 
     await application.initialize()
     await application.start()
