@@ -244,6 +244,8 @@ def start_health_server():
 
 
 if __name__ == "__main__":
+    asyncio.run(bot.delete_webhook())  # Xóa webhook cũ nếu có
+
     application.run_webhook(
         listen="0.0.0.0",
         port=int(os.environ.get("PORT", 10000)),
